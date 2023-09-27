@@ -2,7 +2,7 @@
 
 The Peer-to-Peer Student Finance Platform is a user-friendly digital ecosystem for students, designed to simplify financial management within the academic environment. It enables students to effortlessly split bills and make direct transactions and payments. The platform employs microservices architecture, utilizing .NET for user and transaction management and Go for the API gateway, service registry/discovery, and load balancers, ensuring scalability, flexibility, and robustness. It's a game-changer for students seeking a seamless and collaborative approach to handling their finances while fostering a sense of community.
 
-## Assess Application Suitability
+## Application Suitability
 
 ### Why my platform is a good fit for microservices and why a distributed system is necessary?
 
@@ -24,7 +24,7 @@ The Peer-to-Peer Student Finance Platform is a user-friendly digital ecosystem f
 
 - **Square:** Square relies on microservices for its point-of-sale systems, payment processing, and inventory management, enabling rapid adaptation to changing payment needs and regulations. By breaking down its services into modular components, Square ensures high availability and flexibility in serving businesses of all sizes.
 
-## Define Service Boundaries
+## Service Boundaries
 
 The Peer-to-Peer Student Finance Platform comprises a set of core services, including:
 
@@ -40,6 +40,8 @@ Additionally, the platform employs:
 - A **Database** component to serve as the central repository for critical application data.
 
 Each of these components plays a distinct role in delivering a seamless and efficient user experience.
+
+![The Architecture Diagram of the System](https://github.com/mariusbadrajan/pad-labs/blob/main/Assets/ArchitectureDiagram.png)
 
 ### API Gateway:
 
@@ -76,7 +78,7 @@ Each of these components plays a distinct role in delivering a seamless and effi
 - **Description:** The Database component serves as the foundational data storage and retrieval system for the Peer-to-Peer Student Finance Platform. It stores essential application data, including user information, financial transactions, account balances, transaction history, and other critical data required for platform functionalities.
 - **Role:** Manage and store data, facilitate data retrieval, and ensure data integrity for various platform functionalities, including user operations and financial transactions. Serve as the central repository for application data.
 
-## Choose Technology Stack and Communication Patterns
+## Technology Stack and Communication Patterns
 
 In this platform, the User and Transaction Services, critical for financial operations, are developed using .NET (C#), while the API Gateway, serving as the entry point, is implemented in Go. Communication patterns include RESTful for the API Gateway and gRPC for the User and Transaction Services, ensuring an efficient and secure financial experience for students.
 
@@ -115,7 +117,7 @@ In this platform, the User and Transaction Services, critical for financial oper
 - **Technology Stack:** Microsoft SQL Server (MSSQL) is suitable for relational database needs and integrates well with C# through appropriate database drivers.
 - **Communication Pattern:** Database communication typically uses SQL queries and is independent of REST or gRPC.
 
-## Design Data Management
+## Data Management
 
 ### User Microservice:
 
@@ -381,6 +383,6 @@ In this platform, the User and Transaction Services, critical for financial oper
      ```
    - **Response Code**: 200 OK
 
-## Set Up Deployment and Scaling
+## Deployment and Scaling
 
 I'll use Docker for containerization and Kubernetes for orchestration to effectively manage deployment and scaling in my project. This combination offers flexibility and scalability for my microservices architecture.

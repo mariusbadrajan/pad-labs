@@ -32,6 +32,7 @@ The Peer-to-Peer Student Finance Platform comprises a set of core services, incl
 - **Load Balancer** (for efficient request distribution),
 - **Service Discovery** (for dynamic service registration and discovery),
 - **User Service** (handling user-related operations),
+- **Account Balance Service** (handling account balance operations),
 - **Transaction Service** (managing financial transactions).
 
 Additionally, the platform employs:
@@ -63,9 +64,14 @@ Each of these components plays a distinct role in delivering a seamless and effi
 - **Description:** The User Service is responsible for handling HTTP requests related to user-related operations, including user registration, login, user profiles, profile updates, user searches, and related functionalities. It manages user profiles and authentication.
 - **Role:** Handle HTTP requests related to user-related operations.
 
+### Account Balance Service:
+
+- **Description:** The Account Balance Service is dedicated to managing user account balances and supporting financial operations, including checking balances, topping up accounts, and initiating withdrawals. It ensures users have easy access to their financial information.
+- **Role:** Handle account balance-related operations.
+
 ### Transaction Service:
 
-- **Description:** The Transaction Service is responsible for managing financial transactions within the Peer-to-Peer Student Finance Platform. It handles operations such as creating transactions, maintaining transaction history, checking account balances, topping up accounts, and providing transaction details.
+- **Description:** The Transaction Service is a core component of the Peer-to-Peer Student Finance Platform, responsible for managing financial transactions. It handles a range of financial operations to ensure a seamless experience within the platform.
 - **Role:** Handle financial transaction-related operations.
 
 ### Cache (Linked to API Gateway):
@@ -80,7 +86,7 @@ Each of these components plays a distinct role in delivering a seamless and effi
 
 ## Technology Stack and Communication Patterns
 
-In this platform, the User and Transaction Services, critical for financial operations, are developed using .NET (C#), while the API Gateway, serving as the entry point, is implemented in Go. Communication patterns include RESTful for the API Gateway and gRPC for the User and Transaction Services, ensuring an efficient and secure financial experience for students.
+In this platform, the User and Transaction Services, critical for financial operations, are developed using .NET (C#), while the API Gateway, serving as the entry point, is implemented in Go. Communication patterns include RESTful for the API Gateway and gRPC for the User, Account Balance and Transaction Services, ensuring an efficient and secure financial experience for students.
 
 ### API Gateway (Go):
 
@@ -102,6 +108,11 @@ In this platform, the User and Transaction Services, critical for financial oper
 - **Technology Stack:** I'll implement the User Service in ASP.NET Core (C#).
 - **Communication Pattern:** I will communicate with the User Service via gRPC for efficient and strongly typed interactions related to user operations.
 
+### Account Balance Service (C# Microservice):
+
+- **Technology Stack:** I'll implement the Account Balance Service in ASP.NET Core (C#).
+- **Communication Pattern:** I will communicate with the Account Balance Service via gRPC for efficient and strongly typed interactions related to account balance operations.
+
 ### Transaction Service (C# Microservice):
 
 - **Technology Stack:** I'll implement the Transaction Service in ASP.NET Core (C#).
@@ -121,7 +132,7 @@ In this platform, the User and Transaction Services, critical for financial oper
 
 ### User Microservice:
 
-**Description**: The User Microservice is responsible for managing user accounts, authentication, and user profiles. It allows users to register, log in, view and update their profiles, and search for other users.
+**Description**: The User Management Service is responsible for managing user accounts, authentication, and user profiles. It allows users to register, log in, view and update their profiles, and search for other users.
 
 **Endpoints**:
 
@@ -224,9 +235,67 @@ In this platform, the User and Transaction Services, critical for financial oper
      ```
    - **Response Code**: 200 OK
 
+### Account Balance Microservice:
+
+**Description**: The Account Balance Management Service is responsible for managing user account balances and core financial operations. It allows users to check their balances, top up their accounts, and initiate withdrawals.
+
+**Endpoints**:
+
+1. **Account Balance**
+   - **Endpoint**: `GET /api/transactions/balance/{userId}`
+   - **Description**: Returns the current account balance for a user.
+   - **Request Header**:
+     - `Authorization: Bearer {access_token}`
+   - **Response Body**:
+     ```json
+     {
+       "balance": 450.0
+     }
+     ```
+   - **Response Code**: 200 OK
+
+2. **Top-Up Account**
+   - **Endpoint**: `POST /api/transactions/topup`
+   - **Description**: Enables users to top up their account balances by specifying the amount to add.
+   - **Request Header**:
+     - `Authorization: Bearer {access_token}`
+   - **Request Body**:
+     ```json
+     {
+       "amount": 100.0
+     }
+     ```
+   - **Response Body**:
+     ```json
+     {
+       "message": "Account topped up successfully."
+     }
+     ```
+   - **Response Code**: 200 OK
+
+3. **Account Withdrawal**
+   - **Endpoint**: `POST /api/accounts/withdraw`
+   - **Description**: Allows users to initiate withdrawals from their account balances to an external bank account.
+   - **Request Header**:
+     - `Authorization: Bearer {access_token}`
+   - **Request Body**:
+     ```json
+     {
+       "amount": 50.0,
+       "bankAccount": "1234567890"
+     }
+     ```
+   - **Response Body**:
+     ```json
+     {
+       "message": "Withdrawal request submitted successfully."
+     }
+     ```
+   - **Response Code**: 200 OK
+
 ### Transaction Microservice:
 
-** Description**: The Transaction Microservice facilitates various financial transactions, including Peer-to-Peer (P2P) Payments, Expense Sharing, and Payments to Entities. Users can create transactions, view their transaction history, check their account balance, top up their accounts, and retrieve detailed information about specific transactions.
+**Description**: The Transaction Management Service is responsible for creating and managing financial transactions, including P2P payments, expense sharing, and payments to entities. It allows users to create, view, and manage transactions.
 
 **Endpoints**:
 
@@ -302,39 +371,7 @@ In this platform, the User and Transaction Services, critical for financial oper
      ```
    - **Response Code**: 200 OK
 
-3. **Account Balance**
-   - **Endpoint**: `GET /api/transactions/balance/{userId}`
-   - **Description**: Returns the current account balance for a user.
-   - **Request Header**:
-     - `Authorization: Bearer {access_token}`
-   - **Response Body**:
-     ```json
-     {
-       "balance": 450.0
-     }
-     ```
-   - **Response Code**: 200 OK
-
-4. **Top-Up Account**
-   - **Endpoint**: `POST /api/transactions/topup`
-   - **Description**: Enables users to top up their account balances by specifying the amount to add.
-   - **Request Header**:
-     - `Authorization: Bearer {access_token}`
-   - **Request Body**:
-     ```json
-     {
-       "amount": 100.0
-     }
-     ```
-   - **Response Body**:
-     ```json
-     {
-       "message": "Account topped up successfully."
-     }
-     ```
-   - **Response Code**: 200 OK
-
-5. **Transaction Details**
+3. **Transaction Details**
    - **Endpoint**: `GET /api/transactions/details/{transactionId}`
    - **Description**: Retrieves comprehensive information about a specific transaction, including participants, amounts, and descriptions.
    - **Request Header**:
@@ -362,23 +399,47 @@ In this platform, the User and Transaction Services, critical for financial oper
      ```
    - **Response Code**: 200 OK
 
-6. **Bill Splitting Confirmation or Denial**
-   - **Endpoint**: `POST /api/transactions/splitbill/confirm`
-   - **Description**: Participants in an expense-sharing scenario can confirm or deny the deduction of their share from their accounts when a bill is issued.
+4. **Transaction Cancellation**
+   - **Endpoint**: `POST /api/transactions/cancel/{transactionId}`
+   - **Description**: Allows users to cancel a specific transaction, reversing the associated funds if applicable.
    - **Request Header**:
      - `Authorization: Bearer {access_token}`
    - **Request Body**:
      ```json
      {
-       "transactionId": "987654",
-       "userId": "234567",
-       "confirm": true
+       "reason": "Transaction was initiated in error."
      }
      ```
    - **Response Body**:
      ```json
      {
-       "message": "Transaction confirmed successfully."
+       "message": "Transaction canceled successfully. Funds returned."
+     }
+     ```
+   - **Response Code**: 200 OK
+
+5. **Transaction Approval and Rejection**
+   - **Endpoint**: `POST /api/transactions/approve/{transactionId}` and `POST /api/transactions/reject/{transactionId}`
+   - **Description**: Participants can approve or reject transactions to proceed or deny their involvement.
+   - **Request Header**:
+     - `Authorization: Bearer {access_token}`
+   - **Request Body**:
+     ```json
+     {
+       "userId": "234567",
+       "approve": true
+     }
+     ```
+   - **Response Body**:
+     ```json
+     {
+       "message": "Transaction approved successfully."
+     }
+     ```
+     or
+     ```json
+     {
+       "message": "Transaction rejected successfully."
      }
      ```
    - **Response Code**: 200 OK

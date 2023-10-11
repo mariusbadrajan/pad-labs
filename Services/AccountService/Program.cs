@@ -1,3 +1,6 @@
+using AccountService.Persistence;
+using AccountService.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Additional configuration is required to successfully run gRPC on macOS.
@@ -5,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddDbContext<AccountDbContext>();
 
 var app = builder.Build();
 

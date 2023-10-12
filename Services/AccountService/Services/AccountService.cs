@@ -56,7 +56,7 @@ public class AccountService : AccountServices.AccountServiceBase
     {
         var dbUserAccount = await _accountRepository.GetUserAccountByIdAsync(new Guid(request.Id));
 
-        var userAccount = new UserAccount()
+        var userAccount = new UserAccount
         {
             Id = dbUserAccount.Id.ToString("D"),
             UserId = dbUserAccount.UserId.ToString("D"),
@@ -69,7 +69,7 @@ public class AccountService : AccountServices.AccountServiceBase
     public override async Task<UserAccount> AddUserAccount(AddUserAccountRequest request,
         ServerCallContext context)
     {
-        var dbUserAccount = new Entities.UserAccount()
+        var dbUserAccount = new Entities.UserAccount
         {
             Id = new Guid(request.Account.Id),
             UserId = new Guid(request.Account.UserId),
@@ -84,7 +84,7 @@ public class AccountService : AccountServices.AccountServiceBase
     public override async Task<UserAccount> UpdateOffer(UpdateUserAccountRequest request,
         ServerCallContext context)
     {
-        var dbUserAccount = new Entities.UserAccount()
+        var dbUserAccount = new Entities.UserAccount
         {
             Id = new Guid(request.Account.Id),
             UserId = new Guid(request.Account.UserId),

@@ -16,5 +16,5 @@ public class AccountDbContext : DbContext
         options.UseSqlServer(_configuration.GetConnectionString("AccountDbConnection"));
     }
 
-    public DbSet<UserAccount> UserAccounts { get; set; }
+    public DbSet<Account> Accounts { get; set; }
 }

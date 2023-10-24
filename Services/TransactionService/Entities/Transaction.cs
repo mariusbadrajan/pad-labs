@@ -2,11 +2,11 @@ namespace TransactionService.Entities;
 
 public class Transaction
 {
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
-    public string Type { get; set; } // (e.g., "Payment," "Expense," or "Entity Payment")
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public int AccountId { get; set; }
+    public string Type { get; set; } // ("Payment")
     public float Amount { get; set; }
-    public string Description { get; set; }
-    public DateTime Timestamp { get; set; }
-    public string Status { get; set; } // (e.g., "Completed," "Pending")
+    // public DateTimeOffset Timestamp { get; set; }
+    public string Status { get; set; } // ("Completed")
 }

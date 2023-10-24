@@ -1,107 +1,170 @@
 using AccountService.Proto;
 using AccountService.Repositories;
 using Grpc.Core;
+using System.Data.Common;
 using AccountServices = AccountService.Proto.AccountService;
 
 namespace AccountService.Services;
 
 public class AccountService : AccountServices.AccountServiceBase
 {
-    private readonly IAccountRepository _accountRepository;
+    private readonly IRepository _repository;
+    private readonly int _maxTransactionAmount = 100;
 
-    public AccountService(IAccountRepository accountRepository)
+    public AccountService(IRepository repository)
     {
-        _accountRepository = accountRepository;
+        _repository = repository;
     }
-    
-    public override async Task<UserAccounts> GetUserAccounts(Empty request, ServerCallContext context)
+
+    public override async Task<AccountsResponse> GetUserAccounts(GetUserAccountsRequest request, ServerCallContext context)
     {
-        var dbUserAccounts = await _accountRepository.GetAllUserAccountsAsync();
-        
-        var userAccounts = new UserAccounts();
-        foreach (var userAccount in dbUserAccounts)
+        var dbAccounts = _repository.GetAllUserAccountsAsync(request.UserId);
+        bool transactionCompletedInTime = await Task.WhenAny(dbAccounts, Task.Delay(_maxTransactionAmount)) == dbAccounts;
+
+        if (transactionCompletedInTime)
         {
-            userAccounts.Accounts.Add(new UserAccount
+            if (!dbAccounts.Result.Any())
             {
-                Id = userAccount.Id.ToString("D"),
-                UserId = userAccount.UserId.ToString("D"),
-                Balance = userAccount.Balance
-            });
-        }
+                return new AccountsResponse() { Message = "Collection is empty" };
+            }
 
-        return userAccounts;
+            var accounts = new AccountsResponse();
+            foreach (var dbAccount in dbAccounts.Result)
+            {
+                accounts.Accounts.Add(new AccountResponse
+                {
+                    Id = dbAccount.Id,
+                    UserId = dbAccount.UserId,
+                    Balance = dbAccount.Balance,
+                });
+            }
+            accounts.Message = "Ok";
+
+            return accounts;
+        }
+        else
+        {
+            return new AccountsResponse() { Message = "Request timeout" };
+        }
     }
 
-    public override async Task<UserAccounts> GetAccountsByUserId(GetAccountsByUserIdRequest request,
+    public override async Task<AccountResponse> GetAccountById(GetAccountByIdRequest request,
         ServerCallContext context)
     {
-        var dbUserAccounts = await _accountRepository.GetAllAccountsByUserIdAsync(new Guid(request.UserId));
-        
-        var userAccounts = new UserAccounts();
-        foreach (var userAccount in dbUserAccounts)
-        {
-            userAccounts.Accounts.Add(new UserAccount
-            {
-                Id = userAccount.Id.ToString("D"),
-                UserId = userAccount.UserId.ToString("D"),
-                Balance = userAccount.Balance
-            });
-        }
+        var dbAccount = _repository.GetAccountByIdAsync(request.Id);
+        bool transactionCompletedInTime = await Task.WhenAny(dbAccount, Task.Delay(_maxTransactionAmount)) == dbAccount;
 
-        return userAccounts;
+        if (transactionCompletedInTime)
+        {
+            if (dbAccount.Result == null)
+            {
+                return new AccountResponse() { Message = "Not found" };
+            }
+
+            var account = new AccountResponse
+            {
+                Id = dbAccount.Result.Id,
+                UserId = dbAccount.Result.UserId,
+                Balance = dbAccount.Result.Balance,
+                Message = "Ok"
+            };
+
+            return account;
+        }
+        else
+        {
+            return new AccountResponse() { Message = "Request timeout" };
+        }
     }
 
-    public override async Task<UserAccount> GetUserAccountById(GetUserAccountByIdRequest request,
+    public override async Task<AccountResponse> CreateAccount(AddAccountRequest request,
         ServerCallContext context)
     {
-        var dbUserAccount = await _accountRepository.GetUserAccountByIdAsync(new Guid(request.Id));
-
-        var userAccount = new UserAccount
+        var addDbAccount = new Entities.Account
         {
-            Id = dbUserAccount.Id.ToString("D"),
-            UserId = dbUserAccount.UserId.ToString("D"),
-            Balance = dbUserAccount.Balance
+            UserId = request.Account.UserId,
+            Balance = 0
         };
 
-        return userAccount;
+        var dbAccount = _repository.AddAccountAsync(addDbAccount);
+        bool transactionCompletedInTime = await Task.WhenAny(dbAccount, Task.Delay(_maxTransactionAmount)) == dbAccount;
+
+        if (transactionCompletedInTime)
+        {
+            var account = new AccountResponse
+            {
+                Id = dbAccount.Result.Id,
+                UserId = dbAccount.Result.UserId,
+                Balance = dbAccount.Result.Balance,
+                Message = "Ok"
+            };
+
+            return account;
+        }
+        else
+        {
+            return new AccountResponse() { Message = "Request timeout" };
+        }
     }
 
-    public override async Task<UserAccount> AddUserAccount(AddUserAccountRequest request,
+    public override async Task<AccountResponse> UpdateAccount(UpdateAccountRequest request,
         ServerCallContext context)
     {
-        var dbUserAccount = new Entities.UserAccount
+        var checkAccount = await _repository.GetAccountByIdAsync(request.Account.Id);
+
+        if (checkAccount == null)
         {
-            Id = new Guid(request.Account.Id),
-            UserId = new Guid(request.Account.UserId),
+            return new AccountResponse() { Message = "Not found" };
+        }
+
+        var updateDbAccount = new Entities.Account
+        {
+            Id = request.Account.Id,
+            UserId = request.Account.UserId,
             Balance = request.Account.Balance
         };
 
-        var userAccount = await _accountRepository.AddUserAccountAsync(dbUserAccount);
+        var dbAccount = _repository.UpdateAccountAsync(updateDbAccount);
+        bool transactionCompletedInTime = await Task.WhenAny(dbAccount, Task.Delay(_maxTransactionAmount)) == dbAccount;
 
-        return request.Account;
-    }
-
-    public override async Task<UserAccount> UpdateOffer(UpdateUserAccountRequest request,
-        ServerCallContext context)
-    {
-        var dbUserAccount = new Entities.UserAccount
+        if (transactionCompletedInTime)
         {
-            Id = new Guid(request.Account.Id),
-            UserId = new Guid(request.Account.UserId),
-            Balance = request.Account.Balance
-        };
+            var account = new AccountResponse
+            {
+                Id = dbAccount.Result.Id,
+                UserId = dbAccount.Result.UserId,
+                Balance = dbAccount.Result.Balance,
+                Message = "Ok"
+            };
 
-        var userAccount = await _accountRepository.UpdateUserAccountAsync(dbUserAccount);
-
-        return request.Account;
+            return account;
+        }
+        else
+        {
+            return new AccountResponse() { Message = "Request timeout" };
+        }
     }
-    
-    public override async Task<Empty> DeleteOffer(DeleteUserAccountRequest request,
+
+    public override async Task<AccountResponse> DeleteAccount(DeleteAccountRequest request,
         ServerCallContext context)
     {
-        
-        await _accountRepository.DeleteUserAccountByIdAsync(new Guid(request.Id));
+        var checkAccount = _repository.GetAccountByIdAsync(request.Id);
+        bool transactionCompletedInTime = await Task.WhenAny(checkAccount, Task.Delay(_maxTransactionAmount)) == checkAccount;
 
-        return new Empty();
+        if (transactionCompletedInTime)
+        {
+            if (checkAccount.Result == null)
+            {
+                return new AccountResponse() { Message = "Not found" };
+            }
+        }
+        else
+        {
+            return new AccountResponse() { Message = "Request timeout" };
+        }
+
+        await _repository.DeleteAccountByIdAsync(request.Id);
+
+        return new AccountResponse() { Message = "Ok" };
     }
 }

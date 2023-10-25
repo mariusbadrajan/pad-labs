@@ -1,0 +1,48 @@
+version: '3'
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: sa
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+
+  api1:
+    container_name: account-serice
+    image: mariusbadrajan/pad:api1
+    build:
+      dockerfile: Services/AccountService/Dockerfile
+    ports:
+      - "5001:80"
+    depends_on:
+      - mssql
+    networks:
+      - app-network
+
+  api2:
+    container_name: transaction-serice
+    image: mariusbadrajan/pad:api2
+    build:
+      dockerfile: Services/TransactionService/Dockerfile
+    ports:
+      - "5002:80"
+    depends_on:
+      - mssql
+    networks:
+      - app-network
+
+  flask-gateway:
+    image: mariusbadrajan/pad:api
+    build:
+      context: ./Gateways/ApiGateway
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

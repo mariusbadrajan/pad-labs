@@ -24,7 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="Protos\manager.proto" />
         <None Remove="Protos\transaction.proto" />
+        <Protobuf Include="Protos\manager.proto" />
         <Protobuf Include="Protos\transaction.proto" />
     </ItemGroup>
 </Project>

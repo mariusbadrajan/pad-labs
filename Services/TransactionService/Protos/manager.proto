@@ -1,0 +1,17 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "TransactionService.Proto";
+
+package manager;
+
+service ManagerService {
+	rpc GetHealthStatus(Request) returns (Response);
+}
+
+message Request {
+
+}
+
+message Response {
+	string healthStatus = 1;
+}

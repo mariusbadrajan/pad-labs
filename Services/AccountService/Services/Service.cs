@@ -6,12 +6,12 @@ using AccountServices = AccountService.Proto.AccountService;
 
 namespace AccountService.Services;
 
-public class AccountService : AccountServices.AccountServiceBase
+public class Service : AccountServices.AccountServiceBase
 {
     private readonly IRepository _repository;
     private readonly int _maxTransactionAmount = 100;
 
-    public AccountService(IRepository repository)
+    public Service(IRepository repository)
     {
         _repository = repository;
     }

@@ -446,4 +446,96 @@ In this platform, the User and Transaction Services, critical for financial oper
 
 ## Deployment and Scaling
 
+To run the project:
+```json
+docker-compose up
+```
+
 I'll use Docker for containerization and Kubernetes for orchestration to effectively manage deployment and scaling in my project. This combination offers flexibility and scalability for my microservices architecture.
+
+## Working endpoints
+
+### Account Microservice:
+
+**Endpoints**:
+
+1. **Get User Accounts**
+   - **Endpoint**: `GET /accounts/user/{userId}`
+   - **Description**: Retrieves a list of user accounts for a specific user.
+
+2. **Get Account by Id**
+   - **Endpoint**: `GET /accounts/{accountId}`
+   - **Description**: Retrieves account details for a specific account by its ID.
+
+3. **Create Account**
+   - **Endpoint**: `POST /accounts`
+   - **Description**: Creates a new user account.
+   - **Request Body**:
+     ```json
+     {
+       "userId": 1
+     }
+     ```
+
+4. **Update Account**
+   - **Endpoint**: `PUT /accounts`
+   - **Description**: Updates account information, including the balance, for a specific account.
+   - **Request Body**:
+     ```json
+     {
+       "balance": 600,
+       "id": 1005,
+       "userId": 1
+     }
+     ```
+
+5. **Delete Account**
+   - **Endpoint**: `DELETE /accounts/{accountId}`
+   - **Description**: Deletes a specific account by its ID.
+
+### Transaction Microservice:
+
+**Endpoints**:
+
+1. **Get User Transactions**
+   - **Endpoint**: `GET /transactions/user/{userId}`
+   - **Description**: Retrieves a list of transactions associated with a specific user.
+
+2. **Get Account Transactions**
+   - **Endpoint**: `GET /transactions/account/{accountId}`
+   - **Description**: Retrieves a list of transactions associated with a specific account by its ID.
+
+3. **Get Transaction by Id**
+   - **Endpoint**: `GET /transactions/{transactionId}`
+   - **Description**: Retrieves transaction details for a specific transaction by its ID.
+
+4. **Create Transaction**
+   - **Endpoint**: `POST /transactions`
+   - **Description**: Creates a new transaction.
+   - **Request Body**:
+     ```json
+     {
+       "userId": 1,
+       "accountId": 1003,
+       "amount": 200
+     }
+     ```
+
+4. **Update Transaction**
+   - **Endpoint**: `PUT /transactions`
+   - **Description**: Updates transaction information, including the type, amount, and status, for a specific transaction.
+   - **Request Body**:
+     ```json
+     {
+       "id": 1004,
+       "userId": 1,
+       "accountId": 1003,
+       "type": "Payment",
+       "amount": 2000,
+       "status": "Completed"
+     }
+     ```
+
+5. **Delete Transaction**
+   - **Endpoint**: `DELETE /transactions/{transactionId}`
+   - **Description**: Deletes a specific transaction by its ID.

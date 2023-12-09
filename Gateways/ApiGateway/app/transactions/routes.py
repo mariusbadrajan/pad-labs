@@ -2,8 +2,8 @@ from flask import request, jsonify
 from google.protobuf.json_format import MessageToJson
 import app
 from app.transactions import bp
-from app.grpc.account_client import AccountClient
-from app.grpc.transaction_client import TransactionClient
+from app.grpc.clients.account_client import AccountClient
+from app.grpc.clients.transaction_client import TransactionClient
 
 transaction_client = TransactionClient()
 account_client = AccountClient()

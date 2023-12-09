@@ -1,11 +1,12 @@
 import json
 
-from flask import Flask, request
+import grpc
+from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from app.accounts import bp as accounts_bp
-from app.cache.in_memory_cache import InMemoryCache as Cache
+from app.helpers.in_memory_cache import InMemoryCache as Cache
 from app.transactions import bp as transactions_bp
 
 cache = Cache()
@@ -87,6 +88,14 @@ def create_app():
                     elif 'get_user_transactions' in key or 'get_account_transactions' in key:
                         del cached_items[key]
 
+    @app.errorhandler(Exception)
+    def all_exception_handler(error):
+        if isinstance(error, grpc.RpcError):
+            message = error.details()
+            return jsonify({"error": "gRPC error", "message": message}), 500
+
+        return jsonify({"error": "Unhandled exception", "message": str(error)}), 500
+
     return app
 
 
@@ -94,3 +103,5 @@ app = create_app()
 
 if __name__ == '__main__':
     app.run()
+
+# python -m grpc_tools.protoc -I app/grpc/protos --python_out=app/grpc/protos --grpc_python_out=app/grpc/protos app/grpc/protos/manager.proto

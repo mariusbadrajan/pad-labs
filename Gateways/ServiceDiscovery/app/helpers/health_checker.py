@@ -10,7 +10,7 @@ from app.helpers.load_balancer import loadBalancer
 
 class HealthChecker:
     def __init__(self):
-        self.health_check_interval_sec = 30
+        self.health_check_interval_sec = 5
         self.is_running = False
 
     def check_server_health(self, host):

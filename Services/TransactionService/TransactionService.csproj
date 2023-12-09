@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<ContainerImageName>transaction-service</ContainerImageName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +18,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.NET.Build.Containers" Version="8.0.100" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,7 +28,17 @@
     </ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="..\..\Protos\transaction.proto" Link="Protos\transaction.proto" ProtoRoot="..\..\" GrpcServices="Both" />
-		<Protobuf Include="..\..\Protos\manager.proto" Link="Protos\manager.proto" ProtoRoot="..\..\" GrpcServices="Both" />
+		<Protobuf Include="Protos\transaction.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos\manager.proto" GrpcServices="Both" />
 	</ItemGroup>
+	
+	<!--<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<Protobuf Include="Protos\transaction.proto" OutputDir=""
+				  GrpcServices="both" CompileOutputs="false" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<Protobuf Include="Protos\manager.proto" OutputDir=""
+				  GrpcServices="both" CompileOutputs="false" />
+	</ItemGroup>-->
 </Project>

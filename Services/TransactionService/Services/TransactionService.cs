@@ -59,7 +59,7 @@ public class TransactionService : Protos.Transaction.TransactionService.Transact
             Transaction = transaction,
         };
 
-        context.Status = new Status(StatusCode.OK, "haha");
+        context.Status = new Status(StatusCode.OK, "");
         return transactionResponse;
     }
 

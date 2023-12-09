@@ -7,7 +7,7 @@ namespace TransactionService.Interceptors
     {
         private readonly ILogger _logger;
 
-        private const int _maxTransactionTimeoutMs = 3000;
+        private const int _maxTransactionTimeoutMs = 5000;
 
         public RequestInterceptor(ILogger<RequestInterceptor> logger)
         {

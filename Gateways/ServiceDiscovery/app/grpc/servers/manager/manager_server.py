@@ -9,13 +9,13 @@ from app.helpers.load_balancer import loadBalancer
 class ManagerServiceServicer(manager_pb2_grpc.ManagerServiceServicer):
     def RegisterService(self, request, context):
         loadBalancer.add_service(request)
-        response = manager_pb2.RegisterServiceResponse()
+        response = manager_pb2.RegisterServiceResponse(message="Registered")
         return response
 
     def GetServiceHost(self, request, context):
         host = loadBalancer.get_next_host(request.serviceType)
         if host is None:
-            context.set_code(grpc.StatusCode.UNAVAILABLE)
+            context.set_code(grpc.StatusCode.RESOURCE_EXHAUSTED)
             context.set_details("No services are available at the moment. Try again later.")
             return manager_pb2.GetServiceHostResponse()
 

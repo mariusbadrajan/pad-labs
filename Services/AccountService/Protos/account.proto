@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "AccountService.Proto";
+option csharp_namespace = "Protos.Account";
 
 package account;
 
@@ -12,34 +12,6 @@ service AccountService {
 	rpc DeleteAccount (DeleteAccountRequest) returns (AccountResponse);
 }
 
-message AccountRequest {
-	int32 id = 1;
-	int32 userId = 2;
-	float balance = 3;
-}
-
-message NewAccountRequest {
-	int32 userId = 1;
-}
-
-message AccountResponse {
-	int32 id = 1;
-	int32 userId = 2;
-	float balance = 3;
-
-	string message = 4;
-}
-
-message AccountsResponse {
-	repeated AccountResponse accounts = 1;
-
-	string message = 2;
-}
-
-message Empty {
-  
-}
-
 message GetUserAccountsRequest {
 	int32 userId = 1;
 }
@@ -49,13 +21,29 @@ message GetAccountByIdRequest {
 }
 
 message AddAccountRequest {
-	NewAccountRequest account = 1;
+	int32 userId = 1;
 }
 
 message UpdateAccountRequest {
-	AccountRequest account = 1;
+	int32 id = 1;
+	int32 userId = 2;
+	float balance = 3;
 }
 
 message DeleteAccountRequest {
 	int32 id = 1;
+}
+
+message AccountResponse {
+	optional Account account = 1;
+}
+
+message AccountsResponse {
+	repeated Account accounts = 1;
+}
+
+message Account {
+	int32 id = 1;
+	int32 userId = 2;
+	float balance = 3;
 }

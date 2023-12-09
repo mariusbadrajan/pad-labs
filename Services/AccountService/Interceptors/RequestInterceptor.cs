@@ -6,7 +6,8 @@ namespace AccountService.Interceptors
     public class RequestInterceptor : Interceptor
     {
         private readonly ILogger _logger;
-        private readonly int _maxTransactionAmount = 100;
+
+        private const int _maxTransactionTimeoutMs = 5000;
 
         public RequestInterceptor(ILogger<RequestInterceptor> logger)
         {
@@ -18,13 +19,25 @@ namespace AccountService.Interceptors
         ServerCallContext context,
         UnaryServerMethod<TRequest, TResponse> continuation)
         {
-            _logger.LogInformation("Starting receiving call. Type/Method: {Type} / {Method}",
+            _logger.LogInformation("Starting receiving call. Type/Method: {Type} / {Method}.",
                 MethodType.Unary, context.Method);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var timeoutTask = Task.Delay(TimeSpan.FromMilliseconds(_maxTransactionTimeoutMs), cancellationTokenSource.Token);
+
             try
             {
-                var test = continuation(request, context);
+                var actualTask = continuation(request, context);
+                var completedTask = await Task.WhenAny(actualTask, timeoutTask);
 
-                return test.Result;
+                if (completedTask == timeoutTask)
+                {
+                    cancellationTokenSource.Cancel();
+                    _logger.LogWarning($"Call timed out for method: {context.Method}.");
+                    throw new RpcException(new Status(StatusCode.DeadlineExceeded, "Call timed out"));
+                }
+
+                return await actualTask;
             }
             catch (Exception ex)
             {

@@ -8,9 +8,7 @@ namespace AccountService.Services;
 
 public class ManagerService : Protos.Manager.ManagerService.ManagerServiceBase
 {
-    //private const string appUrlsKey = "ASPNETCORE_URLS";
-    private const string appHostName = "HOSTNAME";
-    private const string appPort = "ASPNETCORE_HTTP_PORTS";
+    private const string appUrlsKey = "ASPNETCORE_URLS";
     private const int maxRegisterRetries = 3;
     private const int registerRetryDelayMs = 3000;
 
@@ -39,19 +37,17 @@ public class ManagerService : Protos.Manager.ManagerService.ManagerServiceBase
         var connected = false;
         var retries = 0;
 
-        var serviceDiscoveryHost = "http://servicediscovery:50051";
-        var hostName = $"{Environment.GetEnvironmentVariable(appHostName)}:{Environment.GetEnvironmentVariable(appPort)}";
-        Console.WriteLine(hostName);
-        //var hostName = Environment.GetEnvironmentVariable(appUrlsKey)!
-        //                          .Split(';')
-        //                          .FirstOrDefault(x => Regex.IsMatch(x, @"^http://"))!;
+        var serviceDiscoveryHost = "http://localhost:50051";
+        var hostName = Environment.GetEnvironmentVariable(appUrlsKey)!
+                                  .Split(';')
+                                  .FirstOrDefault(x => Regex.IsMatch(x, @"^http://"))!;
 
         using var channel = GrpcChannel.ForAddress(serviceDiscoveryHost);
         var client = new Protos.Manager.ManagerService.ManagerServiceClient(channel);
         var registerServiceRequest =
             new RegisterServiceRequest
             {
-                ServiceType = ServiceType.Transaction,
+                ServiceType = ServiceType.Account,
                 Host = hostName
             };
 

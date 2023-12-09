@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from protos import transaction_pb2 as transaction__pb2
+import app.grpc.protos.transaction_pb2 as transaction__pb2
 
 
 class TransactionServiceStub(object):

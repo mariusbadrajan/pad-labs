@@ -18,7 +18,7 @@ public class Repository : IRepository
         return await _dbContext.Accounts.Where(x => x.UserId == userId).ToListAsync();
     }
 
-    public async Task<Account> GetAccountByIdAsync(int id)
+    public async Task<Account?> GetAccountByIdAsync(int id)
     {
         return await _dbContext.Accounts.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
@@ -37,10 +37,9 @@ public class Repository : IRepository
         return result.Entity;
     }
 
-    public async Task DeleteAccountByIdAsync(int id)
+    public async Task DeleteAccountByIdAsync(Account account)
     {
-        var userAccount = await _dbContext.Accounts.FirstOrDefaultAsync(x => x.Id == id);
-        _dbContext.Remove(userAccount);
+        _dbContext.Remove(account);
         await _dbContext.SaveChangesAsync();
     }
 }

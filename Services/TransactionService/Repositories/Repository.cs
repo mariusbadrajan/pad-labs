@@ -23,29 +23,28 @@ public class Repository : IRepository
         return await _dbContext.Transactions.Where(x => x.AccountId == accountId).ToListAsync();
     }
 
-    public async Task<Transaction> GetTransactionByIdAsync(int id)
+    public async Task<Transaction?> GetTransactionByIdAsync(int id)
     {
         return await _dbContext.Transactions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<Transaction> AddTransactionAsync(Transaction account)
+    public async Task<Transaction> AddTransactionAsync(Transaction transaction)
     {
-        var result = _dbContext.Transactions.Add(account);
+        var result = _dbContext.Transactions.Add(transaction);
         await _dbContext.SaveChangesAsync();
         return result.Entity;
     }
 
-    public async Task<Transaction> UpdateTransactionAsync(Transaction account)
+    public async Task<Transaction> UpdateTransactionAsync(Transaction transaction)
     {
-        var result = _dbContext.Transactions.Update(account);
+        var result = _dbContext.Transactions.Update(transaction);
         await _dbContext.SaveChangesAsync();
         return result.Entity;
     }
 
-    public async Task DeleteTransactionByIdAsync(int id)
+    public async Task DeleteTransactionByIdAsync(Transaction transaction)
     {
-        var userAccount = await _dbContext.Transactions.FirstOrDefaultAsync(x => x.Id == id);
-        _dbContext.Remove(userAccount);
+        _dbContext.Remove(transaction);
         await _dbContext.SaveChangesAsync();
     }
 }

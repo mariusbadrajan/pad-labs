@@ -10,6 +10,7 @@ from app.transactions import bp as transactions_bp
 
 cache = Cache()
 
+
 def create_app():
     app = Flask(__name__)
     limiter = Limiter(
@@ -92,4 +93,4 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run
+    app.run()

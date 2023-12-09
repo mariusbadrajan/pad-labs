@@ -1,0 +1,47 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Protos.Manager";
+
+package manager;
+
+service ManagerService {
+	rpc GetHealthStatus(GetHealthStatusRequest) returns (GetHealthStatusResponse);
+	rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse);
+	rpc GetServiceHost(GetServiceHostRequest) returns (GetServiceHostResponse);
+}
+
+enum HealthStatus {
+	Up = 0;
+	Down = 1;
+}
+
+enum ServiceType {
+	Account = 0;
+	Transaction = 1;
+}
+
+message GetHealthStatusRequest {
+
+}
+
+message GetHealthStatusResponse {
+	HealthStatus healthStatus = 1;
+	optional string statusMessage = 2;
+}
+
+message RegisterServiceRequest {
+	ServiceType serviceType = 1;
+	string host = 2;
+}
+
+message RegisterServiceResponse {
+	
+}
+
+message GetServiceHostRequest {
+	ServiceType serviceType = 1;
+}
+
+message GetServiceHostResponse {
+	string host = 1;
+}

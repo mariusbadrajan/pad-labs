@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option csharp_namespace = "Protos.Account";
+
+package account;
+
+service Account {
+	rpc GetUserAccounts (GetUserAccountsRequest) returns (AccountsResponse);
+	rpc GetAccountById (GetAccountByIdRequest) returns (AccountResponse);
+	rpc	CreateAccount (AddAccountRequest) returns (AccountResponse);
+	rpc UpdateAccount (UpdateAccountRequest) returns (AccountResponse);
+	rpc DeleteAccount (DeleteAccountRequest) returns (AccountResponse);
+}
+
+message AccountRequest {
+	int32 id = 1;
+	int32 userId = 2;
+	float balance = 3;
+}
+
+message NewAccountRequest {
+	int32 userId = 1;
+}
+
+message AccountResponse {
+	int32 id = 1;
+	int32 userId = 2;
+	float balance = 3;
+
+	string message = 4;
+}
+
+message AccountsResponse {
+	repeated AccountResponse accounts = 1;
+
+	optional string message = 2;
+}
+
+message Empty {
+  
+}
+
+message GetUserAccountsRequest {
+	int32 userId = 1;
+}
+
+message GetAccountByIdRequest {
+	int32 id = 1;
+}
+
+message AddAccountRequest {
+	NewAccountRequest account = 1;
+}
+
+message UpdateAccountRequest {
+	AccountRequest account = 1;
+}
+
+message DeleteAccountRequest {
+	int32 id = 1;
+}
